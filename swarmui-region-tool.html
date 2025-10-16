@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwarmUI Regional Prompting Tool</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #e0e0e0;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .controls {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .control-row {
+            margin-bottom: 15px;
+        }
+        
+        .control-group {
+            display: inline-block;
+            margin-right: 30px;
+            margin-bottom: 10px;
+        }
+        
+        label {
+            display: inline-block;
+            width: 80px;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            border-radius: 4px;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        
+        button {
+            background: #4a4a4a;
+            color: #e0e0e0;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        
+        button:hover {
+            background: #5a5a5a;
+        }
+        
+        button.image-btn {
+            background: #6a4a8a;
+            margin-left: 0;
+            margin-right: 10px;
+        }
+        
+        button.image-btn:hover {
+            background: #7a5a9a;
+        }
+        
+        button.copy-btn {
+            background: #2196F3;
+            margin-left: 0;
+        }
+        
+        button.copy-btn:hover {
+            background: #1976D2;
+        }
+        
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+            border: 2px solid #444;
+            background: #0a0a0a;
+            margin-bottom: 20px;
+            background-image: repeating-conic-gradient(#1a1a1a 0% 25%, #0a0a0a 0% 50%);
+            background-position: 0 0, 10px 10px;
+            background-size: 20px 20px;
+        }
+        
+        canvas {
+            display: block;
+            cursor: crosshair;
+        }
+        
+        .output-section {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .region-list {
+            margin-top: 15px;
+        }
+        
+        .region-item {
+            background: #1a1a1a;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .region-syntax {
+            font-family: 'Courier New', monospace;
+            color: #4fc3f7;
+            font-size: 14px;
+        }
+        
+        .region-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 3px;
+            vertical-align: middle;
+        }
+        
+        .delete-btn {
+            background: #d32f2f;
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        
+        .delete-btn:hover {
+            background: #e53935;
+        }
+        
+        .combined-output {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 100px;
+            background: #0a0a0a;
+            color: #4fc3f7;
+            border: 1px solid #444;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        
+        h3 {
+            color: #999;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .info {
+            color: #666;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        .stats {
+            color: #666;
+            font-size: 12px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+        }
+        
+        .image-info {
+            display: inline-block;
+            color: #66bb6a;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .checkbox-group {
+            display: inline-block;
+            margin-left: 20px;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        input[type="range"] {
+            width: 120px;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+        
+        .slider-group {
+            display: inline-block;
+            margin-left: 20px;
+        }
+        
+        .slider-value {
+            display: inline-block;
+            width: 30px;
+            text-align: center;
+            color: #4fc3f7;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SwarmUI Regional Prompting Tool</h1>
+        
+        <div class="controls">
+            <div class="control-row">
+                <div class="control-group">
+                    <label>Width:</label>
+                    <input type="number" id="imgWidth" value="1024" min="64" max="4096" step="64">
+                </div>
+                <div class="control-group">
+                    <label>Height:</label>
+                    <input type="number" id="imgHeight" value="1024" min="64" max="4096" step="64">
+                </div>
+                <button onclick="updateCanvas()">Update Size</button>
+                <button onclick="clearRegions()">Clear All</button>
+            </div>
+            
+            <div class="control-row">
+                <input type="file" id="imageUpload" accept="image/*">
+                <button class="image-btn" onclick="document.getElementById('imageUpload').click()">Load Image</button>
+                <button class="image-btn" onclick="clearImage()">Clear Image</button>
+                <span id="imageInfo" class="image-info"></span>
+                
+                <div class="checkbox-group">
+                    <label style="width: auto;">
+                        <input type="checkbox" id="showGrid" checked onchange="drawRegions()">
+                        Show Grid
+                    </label>
+                </div>
+                
+                <div class="slider-group">
+                    <label style="width: auto;">Region Opacity:</label>
+                    <input type="range" id="regionOpacity" min="10" max="80" value="40" onchange="updateOpacity()">
+                    <span id="opacityValue" class="slider-value">40%</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="canvas"></canvas>
+        </div>
+        
+        <div class="output-section">
+            <h3>Individual Regions</h3>
+            <div id="regionList" class="region-list"></div>
+            <div class="info">Click and drag on the canvas to create regions. Each region shows its SwarmUI syntax.</div>
+        </div>
+        
+        <div class="output-section">
+            <h3>Combined Prompt Syntax</h3>
+            <textarea id="combinedOutput" readonly placeholder="Draw regions above to generate syntax..."></textarea>
+            <button class="copy-btn" onclick="copyCombined()">Copy to Clipboard</button>
+            <div class="stats" id="stats"></div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let regions = [];
+        let isDrawing = false;
+        let startX, startY;
+        let currentRegion = null;
+        let backgroundImage = null;
+        let regionOpacity = 40;
+        
+        const colors = [
+            '#ef5350', '#ab47bc', '#5c6bc0', '#42a5f5', 
+            '#26a69a', '#66bb6a', '#ffca28', '#ff7043'
+        ];
+        
+        // Handle image upload
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        backgroundImage = img;
+                        
+                        // Update dimensions to match image
+                        document.getElementById('imgWidth').value = img.width;
+                        document.getElementById('imgHeight').value = img.height;
+                        
+                        // Update image info
+                        document.getElementById('imageInfo').textContent = 
+                            `Loaded: ${file.name} (${img.width}×${img.height})`;
+                        
+                        updateCanvas();
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        function clearImage() {
+            backgroundImage = null;
+            document.getElementById('imageInfo').textContent = '';
+            document.getElementById('imageUpload').value = '';
+            drawRegions();
+        }
+        
+        function updateOpacity() {
+            regionOpacity = parseInt(document.getElementById('regionOpacity').value);
+            document.getElementById('opacityValue').textContent = regionOpacity + '%';
+            drawRegions();
+        }
+        
+        function updateCanvas() {
+            const width = parseInt(document.getElementById('imgWidth').value);
+            const height = parseInt(document.getElementById('imgHeight').value);
+            
+            // Scale canvas for display while maintaining aspect ratio
+            const maxWidth = 800;
+            const scale = Math.min(1, maxWidth / width);
+            
+            canvas.width = width * scale;
+            canvas.height = height * scale;
+            
+            // Store actual dimensions for calculations
+            canvas.dataset.actualWidth = width;
+            canvas.dataset.actualHeight = height;
+            canvas.dataset.scale = scale;
+            
+            drawRegions();
+            updateStats();
+        }
+        
+        function drawRegions() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw background image if loaded
+            if (backgroundImage) {
+                ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+            }
+            
+            // Draw grid if enabled
+            if (document.getElementById('showGrid').checked) {
+                ctx.strokeStyle = backgroundImage ? 'rgba(255, 255, 255, 0.2)' : '#333';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                
+                for (let i = 0; i <= 10; i++) {
+                    const x = (canvas.width / 10) * i;
+                    const y = (canvas.height / 10) * i;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+                
+                ctx.setLineDash([]);
+            }
+            
+            // Draw regions
+            regions.forEach((region, index) => {
+                const opacity = (regionOpacity / 100).toFixed(2);
+                ctx.fillStyle = region.color + Math.round(opacity * 255).toString(16).padStart(2, '0');
+                ctx.strokeStyle = region.color;
+                ctx.lineWidth = 2;
+                
+                const x = region.x * canvas.width;
+                const y = region.y * canvas.height;
+                const w = region.width * canvas.width;
+                const h = region.height * canvas.height;
+                
+                ctx.fillRect(x, y, w, h);
+                ctx.strokeRect(x, y, w, h);
+                
+                // Add region number with background for visibility
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(x + 2, y + 2, 28, 20);
+                ctx.fillStyle = region.color;
+                ctx.font = 'bold 14px monospace';
+                ctx.fillText(`R${index + 1}`, x + 5, y + 18);
+            });
+            
+            // Draw current region being drawn
+            if (currentRegion) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                
+                ctx.fillRect(
+                    currentRegion.x * canvas.width,
+                    currentRegion.y * canvas.height,
+                    currentRegion.width * canvas.width,
+                    currentRegion.height * canvas.height
+                );
+                
+                ctx.strokeRect(
+                    currentRegion.x * canvas.width,
+                    currentRegion.y * canvas.height,
+                    currentRegion.width * canvas.width,
+                    currentRegion.height * canvas.height
+                );
+                
+                ctx.setLineDash([]);
+            }
+        }
+        
+        function updateRegionList() {
+            const list = document.getElementById('regionList');
+            list.innerHTML = '';
+            
+            if (regions.length === 0) {
+                list.innerHTML = '<div class="info">No regions created yet.</div>';
+            }
+            
+            regions.forEach((region, index) => {
+                const item = document.createElement('div');
+                item.className = 'region-item';
+                
+                const syntax = `<region:${region.x.toFixed(3)},${region.y.toFixed(3)},${region.width.toFixed(3)},${region.height.toFixed(3)}>`;
+                
+                item.innerHTML = `
+                    <div>
+                        <span class="region-color" style="background: ${region.color}"></span>
+                        <span style="color: #666; margin-right: 10px;">R${index + 1}</span>
+                        <span class="region-syntax">${syntax}</span>
+                    </div>
+                    <button class="delete-btn" onclick="deleteRegion(${index})">Delete</button>
+                `;
+                
+                list.appendChild(item);
+            });
+            
+            updateCombined();
+        }
+        
+        function updateCombined() {
+            const combined = regions.map(r => 
+                `<region:${r.x.toFixed(3)},${r.y.toFixed(3)},${r.width.toFixed(3)},${r.height.toFixed(3)}>`
+            ).join(' ');
+            document.getElementById('combinedOutput').value = combined || '';
+            updateStats();
+        }
+        
+        function updateStats() {
+            const stats = document.getElementById('stats');
+            const width = parseInt(document.getElementById('imgWidth').value);
+            const height = parseInt(document.getElementById('imgHeight').value);
+            
+            let totalCoverage = 0;
+            regions.forEach(r => {
+                totalCoverage += r.width * r.height * 100;
+            });
+            
+            stats.innerHTML = `
+                <strong>Image:</strong> ${width}×${height}px | 
+                <strong>Regions:</strong> ${regions.length} | 
+                <strong>Coverage:</strong> ${totalCoverage.toFixed(1)}%
+            `;
+        }
+        
+        function copyCombined() {
+            const textarea = document.getElementById('combinedOutput');
+            if (!textarea.value) {
+                alert('No regions to copy!');
+                return;
+            }
+            
+            textarea.select();
+            document.execCommand('copy');
+            
+            // Visual feedback
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            btn.style.background = '#4CAF50';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 1500);
+        }
+        
+        function deleteRegion(index) {
+            regions.splice(index, 1);
+            drawRegions();
+            updateRegionList();
+        }
+        
+        function clearRegions() {
+            if (regions.length > 0) {
+                if (confirm('Clear all regions?')) {
+                    regions = [];
+                    drawRegions();
+                    updateRegionList();
+                }
+            }
+        }
+        
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            startX = (e.clientX - rect.left) / canvas.width;
+            startY = (e.clientY - rect.top) / canvas.height;
+            isDrawing = true;
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const currentX = (e.clientX - rect.left) / canvas.width;
+            const currentY = (e.clientY - rect.top) / canvas.height;
+            
+            currentRegion = {
+                x: Math.min(startX, currentX),
+                y: Math.min(startY, currentY),
+                width: Math.abs(currentX - startX),
+                height: Math.abs(currentY - startY)
+            };
+            
+            drawRegions();
+        });
+        
+        canvas.addEventListener('mouseup', (e) => {
+            if (!isDrawing) return;
+            
+            if (currentRegion && currentRegion.width > 0.01 && currentRegion.height > 0.01) {
+                currentRegion.color = colors[regions.length % colors.length];
+                regions.push(currentRegion);
+                updateRegionList();
+            }
+            
+            currentRegion = null;
+            isDrawing = false;
+            drawRegions();
+        });
+        
+        // Prevent context menu on canvas
+        canvas.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+        
+        // Initialize
+        updateCanvas();
+    </script>
+</body>
+</html>
