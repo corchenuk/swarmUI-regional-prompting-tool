@@ -4,11 +4,11 @@ A visual tool for creating regional prompts in SwarmUI. Draw regions on a canvas
 
 ## Features
 
-- 🎨 **Visual region editor** - Click and drag to create regions
-- 🖼️ **Image overlay support** - Load existing images to plan regional edits
-- 📋 **One-click copy** - Copy complete syntax ready for SwarmUI
-- 📊 **Live preview** - See region coverage and percentages in real-time
-- 🎛️ **Adjustable opacity** - Control region transparency for better visibility
+- **Visual region editor** - Click and drag to create regions
+- **Image overlay support** - Load existing images to plan regional edits
+- **One-click copy** - Copy complete syntax ready for SwarmUI
+- **Live preview** - See region coverage and percentages in real-time
+- **Adjustable opacity** - Control region transparency for better visibility
 
 ## Usage
 
